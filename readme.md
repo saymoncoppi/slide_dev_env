@@ -26,9 +26,11 @@ cat /etc/lsb-release
 
 apt update
 
-apt install curl
+apt-get install --yes --no-install-recommends wget gpg
 
-curl -o install.sh https://raw.githubusercontent.com/saymoncoppi/slide_dev_env/main/install.sh; bash install.sh
+apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+wget -O install.sh https://raw.githubusercontent.com/saymoncoppi/slide_dev_env/main/install.sh; bash install.sh
 
 
 ## Other references:
