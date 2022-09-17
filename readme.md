@@ -1,6 +1,7 @@
 # slide
 Simple, Light and Incredible Dev Environment
-![slide](https://raw.githubusercontent.com/saymoncoppi/slide_dev_env/slide.png "slide")
+
+![slide](https://raw.githubusercontent.com/saymoncoppi/slide_dev_env/main/slide.png "slide")
 
 Mix de algumas ideias para testar com o Tony.
 
