@@ -1,8 +1,6 @@
 #!/bin/bash
 
-sleep 3; echo '
-# NEW APT SETTINGS
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+echo 'NEW APT SETTINGS'
 echo 'APT
 {
   NeverAutoRemove
@@ -75,10 +73,9 @@ path-exclude /usr/share/locale/*
 path-include /usr/share/locale/en*
 " > /etc/dpkg/dpkg.cfg.d/01_nodoc
 
+echo "done"
 
-sleep 3; echo '
-# NEW FLAVOR
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+echo 'NEW FLAVOR'
 
 # edit /etc/issue
 echo "slide 0.1" > /etc/issue
@@ -97,29 +94,24 @@ echo "slide" > /etc/hostname
 
 echo "done"
 
-sleep 3; echo '
-# APT UPDATE
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+echo 'APT UPDATE'
 apt update
 
-sleep 3; echo '
-# NEW X
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+echo 'NEW X'
 
-apt-get install --yes --force-yes --no-install-recommends \
+apt-get install --yes --allow --no-install-recommends \
 xserver-xorg-core \
 xserver-xorg-legacy \
 xserver-xorg-video-vesa \
-xserver-xorg-video-vmware \
-xserver-xorg-input-all \
 xinit \
 xfonts-base \
 x11-utils \
 libxcursor1 \
 libdrm-intel1 \
 libgl1-mesa-dri \
-libglu1-mesa \
-openbox 
+libglu1-mesa
+
+
 
 # install x11 server utils, apt-get would add cpp dependency, bullshit!
 cd /tmp
@@ -128,18 +120,35 @@ dpkg -x x11-xserver-utils*.deb /tmp/x11utils
 cd /tmp/x11utils
 cp -aR * /
 
-echo "export DISPLAY=localhost:0.0" >> ~/.bashrc
-
-# make folder .config/openbox
-mkdir -p ~/.config/openbox/
-cd ~/.config/openbox/
-
-echo 'done'
+# replace localhost with your current IP
+echo "Enter the vcxsrv IP address: "
+read vcxsrv_ip
+echo "export DISPLAY=$vcxsrv_ip:0.0" >> ~/.bashrc
 
 
-sleep 3; echo '
-# CLEANUP
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+
+echo 'INSTALL DEV TOOLS'
+apt-get install --yes --allow --no-install-recommends wget gpg \
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg \
+echo "deb https://download.sublimetext.com/ apt/stable/" | tee /etc/apt/sources.list.d/sublime-text.list \
+apt-get update && apt-get install --no-install-recommends -y \
+python3 python3-dev python3-setuptools python3-pip \
+gcc git openssh-client less curl nano vim bsdmainutils snapd apt-transport-https openjdk-11-jdk qemu qemu-kvm \
+libxtst-dev libxext-dev libxrender-dev libfreetype6-dev \
+libfontconfig1 libgtk2.0-0 libxslt1.1 libxxf86vm1 libpq-dev libglu1-mesa \
+# dev-tools
+sudo zip unzip file sublime-text terminator git-cola gitk meld nautilus \
+# buser-djangosu
+wait-for-it jq libgdal-dev locales supervisor libmagic-dev build-essential libgeos-dev libffi-dev libxml2-dev libxslt1-dev rustc cargo \
+# && rm -rf /var/lib/apt/lists/* \
+systemctl enable snapd \
+groupadd -g 1000 -r developer \
+useradd -u 1000 -g 1000 -ms /bin/bash -r developer \
+echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-developer \
+adduser developer kvm
+
+
+echo 'CLEANUP'
 apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 echo 'done'
